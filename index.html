@@ -122,12 +122,24 @@ function login() {
     }
 }
 
-// PHOTO LIST
-const personPhotos = {
-    1: ["p1_1.jpeg.jpeg", "p1_2.jpeg.jpeg"],
-    2: ["p2_1.jpeg.jpeg", "p2_2.jpeg.jpeg"],
-    3: ["p3_1.jpeg.jpeg", "p3_2.jpeg.jpeg"]
-};
+// ❗ Load stored photos or default ones
+function getPhotos(id) {
+    let saved = localStorage.getItem("person" + id);
+    if (saved) return JSON.parse(saved);
+
+    // default photos
+    const defaults = {
+        1: ["p1_1.jpeg.jpeg", "p1_2.jpeg.jpeg"],
+        2: ["p2_1.jpeg.jpeg", "p2_2.jpeg.jpeg"],
+        3: ["p3_1.jpeg.jpeg", "p3_2.jpeg.jpeg"]
+    };
+    return defaults[id];
+}
+
+// ❗ Save updated photos permanently
+function savePhotos(id, photos) {
+    localStorage.setItem("person" + id, JSON.stringify(photos));
+}
 
 // SHOW PERSON
 function showPerson(id) {
@@ -142,7 +154,9 @@ function loadPhotos() {
     let container = document.getElementById("photosContainer");
     container.innerHTML = "";
 
-    personPhotos[currentPerson].forEach((photo, index) => {
+    let photos = getPhotos(currentPerson);
+
+    photos.forEach((photo, index) => {
         container.innerHTML += `
             <div class="photo-box">
                 <img src="${photo}">
@@ -154,9 +168,11 @@ function loadPhotos() {
     });
 }
 
-// DELETE PHOTO
+// DELETE PHOTO (Permanent)
 function deletePhoto(index) {
-    personPhotos[currentPerson].splice(index, 1);
+    let photos = getPhotos(currentPerson);
+    photos.splice(index, 1);
+    savePhotos(currentPerson, photos);
     loadPhotos();
 }
 
@@ -166,14 +182,16 @@ function openAddPhoto(index) {
     document.getElementById("addPhotoInput").click();
 }
 
-// ADD PHOTO
+// ADD PHOTO (Permanent)
 document.getElementById("addPhotoInput").addEventListener("change", function(event) {
     let file = event.target.files[0];
     if (!file) return;
 
     let reader = new FileReader();
     reader.onload = function(e) {
-        personPhotos[currentPerson].splice(window.addPhotoIndex, 0, e.target.result);
+        let photos = getPhotos(currentPerson);
+        photos.splice(window.addPhotoIndex, 0, e.target.result);
+        savePhotos(currentPerson, photos);  // Save permanently
         loadPhotos();
     };
     reader.readAsDataURL(file);
