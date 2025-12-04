@@ -10,7 +10,7 @@
         background: #f2f2f2;
     }
 
-    /* Center login box */
+    /* Login */
     #loginSection {
         display: flex;
         justify-content: center;
@@ -35,40 +35,46 @@
     }
 
     button {
-        width: 100%;
-        padding: 10px;
+        padding: 8px 12px;
         background: #4CAF50;
         color: white;
         border: none;
         border-radius: 5px;
         cursor: pointer;
+        margin: 5px;
     }
-
     button:hover {
         background: #45a049;
     }
 
-    /* Gallery section */
-    #gallery img {
-        width: 150px;
+    /* Photo box */
+    .photo-box {
+        display: inline-block;
         margin: 10px;
-        cursor: pointer;
+        padding: 10px;
+        background: white;
         border-radius: 10px;
         box-shadow: 0 0 5px black;
+        text-align: center;
+    }
+    .photo-box img {
+        width: 200px;
+        border-radius: 10px;
     }
 
-    #photosContainer img {
-        width: 200px;
-        margin: 10px;
-        border-radius: 10px;
-        box-shadow: 0 0 5px black;
+    .delete-btn {
+        background: red;
     }
+    .add-btn {
+        background: blue;
+    }
+
 </style>
 
 </head>
 <body>
 
-<!-- ---------------- LOGIN SECTION ---------------- -->
+<!-- LOGIN -->
 <section id="loginSection">
     <div class="login-box">
         <h2>Login</h2>
@@ -78,27 +84,32 @@
     </div>
 </section>
 
-<!-- ---------------- GALLERY SECTION ---------------- -->
+<!-- GALLERY -->
 <section id="gallery" style="display:none;">
     <h2 style="text-align:center;">Select a Person</h2>
     <div style="text-align:center;">
-        <img src="p1_main.jpeg.jpeg" onclick="showPerson(1)">
-        <img src="p2_main.jpeg.jpeg" onclick="showPerson(2)">
-        <img src="p3_main.jpeg.jpeg" onclick="showPerson(3)">
+        <img src="p1_main.jpeg.jpeg" onclick="showPerson(1)" width="150">
+        <img src="p2_main.jpeg.jpeg" onclick="showPerson(2)" width="150">
+        <img src="p3_main.jpeg.jpeg" onclick="showPerson(3)" width="150">
     </div>
 </section>
 
-<!-- ---------------- PERSON PHOTOS SECTION ---------------- -->
+<!-- PHOTOS -->
 <section id="personPhotos" style="display:none; text-align:center;">
     <h2>Person Photos</h2>
+
+    <input type="file" id="addPhotoInput" style="display:none;" accept="image/*">
+
     <div id="photosContainer"></div>
+
     <button onclick="goBack()">Back</button>
 </section>
 
-<!-- ---------------- SCRIPT ---------------- -->
 <script>
 
-// LOGIN FUNCTION
+let currentPerson = null;
+
+// LOGIN
 function login() {
     let user = document.getElementById("username").value;
     let pass = document.getElementById("password").value;
@@ -111,27 +122,64 @@ function login() {
     }
 }
 
-// PHOTO DATA
+// PHOTO LIST
 const personPhotos = {
     1: ["p1_1.jpeg.jpeg", "p1_2.jpeg.jpeg"],
     2: ["p2_1.jpeg.jpeg", "p2_2.jpeg.jpeg"],
     3: ["p3_1.jpeg.jpeg", "p3_2.jpeg.jpeg"]
 };
 
-// SHOW PERSON PHOTOS
+// SHOW PERSON
 function showPerson(id) {
+    currentPerson = id;
     document.getElementById("gallery").style.display = "none";
     document.getElementById("personPhotos").style.display = "block";
+    loadPhotos();
+}
 
+// LOAD PHOTOS WITH ADD + DELETE BUTTONS
+function loadPhotos() {
     let container = document.getElementById("photosContainer");
     container.innerHTML = "";
 
-    personPhotos[id].forEach(photo => {
-        container.innerHTML += `<img src="${photo}">`;
+    personPhotos[currentPerson].forEach((photo, index) => {
+        container.innerHTML += `
+            <div class="photo-box">
+                <img src="${photo}">
+                <br>
+                <button class="delete-btn" onclick="deletePhoto(${index})">Delete Photo</button>
+                <button class="add-btn" onclick="openAddPhoto(${index})">Add Photo</button>
+            </div>
+        `;
     });
 }
 
-// GO BACK TO GALLERY
+// DELETE PHOTO
+function deletePhoto(index) {
+    personPhotos[currentPerson].splice(index, 1);
+    loadPhotos();
+}
+
+// OPEN ADD BUTTON
+function openAddPhoto(index) {
+    window.addPhotoIndex = index + 1;
+    document.getElementById("addPhotoInput").click();
+}
+
+// ADD PHOTO
+document.getElementById("addPhotoInput").addEventListener("change", function(event) {
+    let file = event.target.files[0];
+    if (!file) return;
+
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        personPhotos[currentPerson].splice(window.addPhotoIndex, 0, e.target.result);
+        loadPhotos();
+    };
+    reader.readAsDataURL(file);
+});
+
+// BACK
 function goBack() {
     document.getElementById("personPhotos").style.display = "none";
     document.getElementById("gallery").style.display = "block";
