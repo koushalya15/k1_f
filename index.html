@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login + Person Gallery</title>
+
+<style>
+    body {
+        font-family: Arial;
+        margin: 0;
+        background: #f2f2f2;
+    }
+
+    /* Center login box */
+    #loginSection {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    .login-box {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        width: 300px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        text-align: center;
+    }
+
+    input {
+        width: 90%;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+        border: 1px solid gray;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #45a049;
+    }
+
+    /* Gallery section */
+    #gallery img {
+        width: 150px;
+        margin: 10px;
+        cursor: pointer;
+        border-radius: 10px;
+        box-shadow: 0 0 5px black;
+    }
+
+    #photosContainer img {
+        width: 200px;
+        margin: 10px;
+        border-radius: 10px;
+        box-shadow: 0 0 5px black;
+    }
+</style>
+
+</head>
+<body>
+
+<!-- ---------------- LOGIN SECTION ---------------- -->
+<section id="loginSection">
+    <div class="login-box">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Enter Username">
+        <input type="password" id="password" placeholder="Enter Password">
+        <button onclick="login()">Login</button>
+    </div>
+</section>
+
+<!-- ---------------- GALLERY SECTION ---------------- -->
+<section id="gallery" style="display:none;">
+    <h2 style="text-align:center;">Select a Person</h2>
+    <div style="text-align:center;">
+        <img src="p1_main.jpeg.jpeg" onclick="showPerson(1)">
+        <img src="p2_main.jpeg.jpeg" onclick="showPerson(2)">
+        <img src="p3_main.jpeg.jpeg" onclick="showPerson(3)">
+    </div>
+</section>
+
+<!-- ---------------- PERSON PHOTOS SECTION ---------------- -->
+<section id="personPhotos" style="display:none; text-align:center;">
+    <h2>Person Photos</h2>
+    <div id="photosContainer"></div>
+    <button onclick="goBack()">Back</button>
+</section>
+
+<!-- ---------------- SCRIPT ---------------- -->
+<script>
+
+// LOGIN FUNCTION
+function login() {
+    let user = document.getElementById("username").value;
+    let pass = document.getElementById("password").value;
+
+    if (user === "admin" && pass === "1234") {
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("gallery").style.display = "block";
+    } else {
+        alert("Incorrect Username or Password");
+    }
+}
+
+// PHOTO DATA
+const personPhotos = {
+    1: ["p1_1.jpeg.jpeg", "p1_2.jpeg.jpeg"],
+    2: ["p2_1.jpeg.jpeg", "p2_2.jpeg.jpeg"],
+    3: ["p3_1.jpeg.jpeg", "p3_2.jpeg.jpeg"]
+};
+
+// SHOW PERSON PHOTOS
+function showPerson(id) {
+    document.getElementById("gallery").style.display = "none";
+    document.getElementById("personPhotos").style.display = "block";
+
+    let container = document.getElementById("photosContainer");
+    container.innerHTML = "";
+
+    personPhotos[id].forEach(photo => {
+        container.innerHTML += `<img src="${photo}">`;
+    });
+}
+
+// GO BACK TO GALLERY
+function goBack() {
+    document.getElementById("personPhotos").style.display = "none";
+    document.getElementById("gallery").style.display = "block";
+}
+
+</script>
+
+</body>
+</html>
